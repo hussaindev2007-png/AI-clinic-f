@@ -1,10 +1,8 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
-// --- Toastify Imports ---
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-// ------------------------
 import { LogIn, Loader2, ShieldCheck, Mail, Lock } from 'lucide-react';
 
 export default function Login() {
@@ -13,13 +11,12 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // const BACKEND_URL = 'http://localhost:5000/api/auth/login';
-  // Localhost ki jagah live URL use karein jab deploy ho
+  
 const BACKEND_URL = import.meta.env.VITE_API_URL 
   ? `${import.meta.env.VITE_API_URL}/api/auth/login` 
   : 'http://localhost:5000/api/auth/login'; 
 
-  // --- Common Toast Config ---
+
 
   console.log(BACKEND_URL);
   
@@ -30,112 +27,30 @@ const BACKEND_URL = import.meta.env.VITE_API_URL
     closeOnClick: true,
     pauseOnHover: true,
     draggable: true,
-    theme: "light", // <--- Ye "light" karne se background white ho jayega
+    theme: "light", 
   };
 
-  // const handleLogin = async (e) => {
-  //   e.preventDefault();
-  //   setLoading(true);
-    
-  //   const loginToastId = toast.loading("Verifying Identity...", { ...toastConfig });
-
-  //   try {
-  //     const res = await axios.post(BACKEND_URL, { email, password });
-  //     const userData = res.data.user || res.data; 
-  //     const token = res.data.token;
-  //     const role = userData.role;
-
-  //     if (token && role) {
-  //       localStorage.setItem('token', token);
-  //       localStorage.setItem('role', role);
-  //       localStorage.setItem('userName', userData.name || 'User');
-        
-  //       toast.update(loginToastId, { 
-  //         render: `Welcome, ${userData.name}! Access Granted.`, 
-  //         type: "success", 
-  //         isLoading: false, 
-  //         autoClose: 2000,
-  //         theme: "light" 
-  //       });
-
-  //       setTimeout(() => { window.location.href = '/dashboard'; }, 1500);
-  //     }
-  //   } catch (err) {
-  //     let msg = err.response?.data?.message || "Login Failed!";
-  //     if (err.code === "ERR_NETWORK") msg = "Server Connection Error!";
-
-  //     toast.update(loginToastId, { 
-  //       render: msg, 
-  //       type: "error", 
-  //       isLoading: false, 
-  //       autoClose: 3000,
-  //       theme: "light"
-  //     });
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
-//   // ... baaki imports same rahenge
-// const handleLogin = async (e) => {
-//     e.preventDefault();
-//     setLoading(true);
-    
-//     const loginToastId = toast.loading("Verifying Identity...", { ...toastConfig });
-
-//     try {
-//       const res = await axios.post(BACKEND_URL, { email, password });
-      
-//       // Backend response handle karein
-//       const userData = res.data.user; 
-//       const token = res.data.token;
-
-//       if (token && userData) {
-//         // --- YE CHARO CHEEZEIN SAVE KARNA ZAROORI HAIN ---
-//         localStorage.setItem('token', token);
-//         localStorage.setItem('role', userData.role);
-//         localStorage.setItem('userName', userData.name);
-        
-//         // Backend se 'id' aa rahi hai, hum use 'userId' key mein save karenge
-//         localStorage.setItem('userId', userData.id); 
-        
-//         toast.update(loginToastId, { 
-//           render: `Welcome, ${userData.name}! Access Granted.`, 
-//           type: "success", 
-//           isLoading: false, 
-//           autoClose: 2000,
-//           theme: "light" 
-//         });
-
-//         // Dashboard par bhej dein
-//         setTimeout(() => { window.location.href = '/dashboard'; }, 1500);
-//       }
-//     } catch (err) {
-//       // ... error handling same rahegi
-//     } finally {
-//       setLoading(false);
-//     }
-// };
+  
 const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
     
-    // Toast start karein
+   
     const loginToastId = toast.loading("Verifying Identity...", { ...toastConfig });
 
     try {
         const res = await axios.post(BACKEND_URL, { email, password });
         
-        // Safety check: Backend se data mil raha hai ya nahi
+       
         const { user, token } = res.data;
 
         if (token && user) {
-            // --- DATA STORAGE ---
+           
             localStorage.setItem('token', token);
             localStorage.setItem('role', user.role);
             localStorage.setItem('userName', user.name);
             
-            // MongoDB mein aksar '_id' hoti hai, isliye fallback rakha hai
+           
             const idToSave = user.id || user._id;
             localStorage.setItem('userId', idToSave); 
             
@@ -147,13 +62,12 @@ const handleLogin = async (e) => {
                 theme: "light" 
             });
 
-            // Redirect logic - window.location page refresh kar deta hai jo states clean karne ke liye acha hai
             setTimeout(() => { 
                 window.location.href = '/dashboard'; 
             }, 1500);
         }
     } catch (err) {
-        // Error handling improve ki hai
+        
         let errorMsg = "Login Failed! Please check credentials.";
         
         if (err.code === "ERR_NETWORK") {
@@ -177,7 +91,7 @@ const handleLogin = async (e) => {
   return (
     <div className="flex h-screen items-center justify-center bg-slate-50 font-sans">
       
-      {/* Toastify Container with White Theme */}
+      
       <ToastContainer />
 
       <form onSubmit={handleLogin} className="w-full max-w-md bg-white p-12 rounded-[3rem] shadow-2xl shadow-indigo-100 border border-white">
@@ -233,7 +147,3 @@ const handleLogin = async (e) => {
     </div>
   );
 }
-
-
-
-
