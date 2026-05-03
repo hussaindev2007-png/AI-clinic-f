@@ -1,21 +1,21 @@
 
 
-
 import { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom'; // useSearchParams add kiya
 import API from '../util/api';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { UserPlus, Mail, Lock, UserCheck, Loader2, Shield, LockKeyhole } from 'lucide-react';
 
 const Register = () => {
-  
   const [formData, setFormData] = useState({ name: '', email: '', password: '', role: 'defalt' });
   const [loading, setLoading] = useState(false);
-  const [isLocked, setIsLocked] = useState(true);
+  const [isLocked, setIsLocked] = useState(true); // Page lock state
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
+  // --- Secret Key Configuration ---
+  // Ye wahi key honi chahiye jo aapne backend .env mein rakhi hai
   const ADMIN_SECRET_KEY = "786"; 
 
   useEffect(() => {
@@ -27,21 +27,13 @@ const Register = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-
- 
-    if (formData.role === 'defalt') {
-      toast.error("You have selected the default value. Please select a valid role!", {
-        position: "top-right",
-        autoClose: 3000,
-        theme: "light",
-      });
-      return; 
-    }
-
     setLoading(true);
+    
+    // Backend ko secret key query mein bhej rahe hain
     const regToastId = toast.loading("Verifying Admin Secret...", { theme: "light" });
 
     try {
+      // URL mein query parameter attach kar diya
       await API.post(`/auth/register?secret=${ADMIN_SECRET_KEY}`, formData);
       
       toast.update(regToastId, { 
@@ -67,6 +59,7 @@ const Register = () => {
     }
   };
 
+  // Agar Secret Key galat hai to ye screen nazar aayegi
   if (isLocked) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 p-6 text-center">
@@ -92,6 +85,8 @@ const Register = () => {
       <ToastContainer theme="light" />
 
       <div className="bg-white p-10 md:p-14 rounded-[3rem] shadow-2xl shadow-indigo-100/50 w-full max-w-md border border-white relative overflow-hidden">
+        
+        {/* Decorative Shield Icon */}
         <div className="absolute -top-6 -right-6 text-indigo-50 opacity-50">
            <Shield size={150} />
         </div>
@@ -107,6 +102,7 @@ const Register = () => {
           </div>
 
           <form onSubmit={handleRegister} className="space-y-5">
+            {/* Full Name */}
             <div className="relative group">
               <UserCheck className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-indigo-500 transition-colors" size={20} />
               <input 
@@ -116,6 +112,7 @@ const Register = () => {
               />
             </div>
 
+            {/* Email */}
             <div className="relative group">
               <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-indigo-500 transition-colors" size={20} />
               <input 
@@ -125,6 +122,7 @@ const Register = () => {
               />
             </div>
 
+            {/* Password */}
             <div className="relative group">
               <Lock className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-indigo-500 transition-colors" size={20} />
               <input 
@@ -134,7 +132,7 @@ const Register = () => {
               />
             </div>
 
-            
+            {/* Role Selection */}
             <div className="relative group">
               <Shield className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-indigo-500 transition-colors" size={20} />
               <select 
@@ -142,10 +140,9 @@ const Register = () => {
                 onChange={(e) => setFormData({...formData, role: e.target.value})}
                 value={formData.role}
               >
-                
-                <option value="defalt" className="cursor-pointer">Select Role (Default)</option>
-                <option value="admin" className="cursor-pointer">Select Role (Admin)</option>
-                </select>
+                <option  className="cursor-pointer">Defalt</option>
+                <option value="admin" className="cursor-pointer">Admin</option>
+              </select>
             </div>
 
             <button 
@@ -167,4 +164,8 @@ const Register = () => {
   );
 };
 
-export default Register;                    
+export default Register;
+
+
+
+
